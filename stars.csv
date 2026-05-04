@@ -1,0 +1,22 @@
+name,ra_hours,dec_degrees,distance_ly,magnitude,constellation
+Sirius, 6.7525, -16.7161,8.6,-1.46,Canis Major
+Canopus, 6.3992, -52.6957,310,-0.74,Carina
+Arcturus, 14.2610, 19.1825,36.7,-0.05,Boötes
+Alpha Centauri, 14.6601, -60.8339,4.37,-0.27,Centaurus
+Vega, 18.6156, 38.7837,25.0,0.03,Lyra
+Capella, 5.2782, 45.9979,42.9,0.08,Auriga
+Rigel, 5.2423, -8.2016,860,0.12,Orion
+Procyon, 7.6550, 5.2250,11.4,0.38,Canis Minor
+Betelgeuse, 5.9195, 7.4071,642,0.42,Orion
+Achernar, 1.6286, -57.2367,139,0.46,Eridanus
+Hadar, 14.0637, -60.3730,390,0.61,Centaurus
+Altair, 19.8464, 8.8683,16.7,0.77,Aquila
+Acrux, 12.4433, -63.0991,321,0.77,Crux
+Aldebaran, 4.5987, 16.5093,65,0.85,Taurus
+Antares, 16.4901, -26.4320,550,0.96,Scorpius
+Spica, 13.4199, -11.1614,250,0.98,Virgo
+Pollux, 7.7553, 28.0262,34,1.14,Gemini
+Fomalhaut, 22.9608, -29.6222,25,1.16,Piscis Austrinus
+Deneb, 20.6905, 45.2803,2600,1.25,Cygnus
+Regulus, 10.1395, 11.9672,79,1.35,Leo
+Polaris, 2.5303, 89.2641,433,1.97,Ursa Minor
