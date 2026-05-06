@@ -32,7 +32,7 @@ def render():
     draw.text((0, 0), "BRIGHTEST:", font=_font, fill=1)
     for i, star in enumerate(top3):
         y = (i + 1) * 14
-        line = f"{star.name} {star.magnitude} {star.ra_hours:.1f}/{star.dec_degrees:.1f}"
+        line = f"{star.name} {star.magnitude} {star.ra_hours:.1f} / {star.dec_degrees:.1f}"
         draw.text((0, y), line, font=_font, fill=1)
 
     return image,None

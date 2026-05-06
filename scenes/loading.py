@@ -1,5 +1,10 @@
 from PIL import Image, ImageSequence, ImageDraw, ImageFont
 from display import WIDTH, HEIGHT
+import os
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.dirname(_HERE)  # scenes/ is one level below root
+LOGO_PATH = os.path.join(_PROJECT_ROOT, 'galloelectronics.png')
 
 _frames = None
 _idx = 0
