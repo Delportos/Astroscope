@@ -217,7 +217,7 @@ def stars_i_can_look_at(lat_deg:float,lon_deg:float, alt_m: float, utc:datetime,
 
 # demo
 if __name__ == "__main__":
-    catalog = load_catalog("stars.csv")
+    catalog = load_catalog("astroscope/stars.csv")
 
     test_input = (
         41.495, #lat

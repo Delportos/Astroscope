@@ -18,7 +18,7 @@ import threading
 # (Constants happen to match the real display, but this keeps the import order honest.)
 from virtualdisplay import virtual as display
 
-from scenes import splash, hello, readoutv1, galesplash, boot, loading
+from scenes import splash, hello, readoutv1, galesplash, boot, loading,planet
 
 SCENES = {
     'splash': splash.render,
@@ -27,6 +27,7 @@ SCENES = {
     'gale': galesplash.render,
     'boot': boot.render,
     'load': loading.render,
+    'planet':planet.render,
 }
 
 
