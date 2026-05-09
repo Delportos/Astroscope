@@ -13,8 +13,8 @@ from PIL import ImageFont
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 planets = load_catalog(os.path.join(PROJECT_ROOT, "planets.csv"))
-#_font = ImageFont.load_default()
-_font = ImageFont.truetype("/System/Library/Fonts/Menlo.ttc", size=12)
+_font = ImageFont.load_default()
+#_font = ImageFont.truetype("/System/Library/Fonts/Menlo.ttc", size=12)
 
 
 

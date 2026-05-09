@@ -11,7 +11,7 @@ _idx = 0
 
 def _load():
     global _frames
-    gif = Image.open('loadingscreen1.gif')
+    gif = Image.open('assets/loadingscreen1.gif')
     _frames = []
     font = ImageFont.load_default()
     for i, frame in enumerate(ImageSequence.Iterator(gif)):
