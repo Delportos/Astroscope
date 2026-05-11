@@ -105,3 +105,13 @@ if __name__ == "__main__":
 
     ra, dec, dist = planet_radec(planets["jupiter"], planets["earth"], jd=2461169.54167)
     print(f"Jupiter: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+    ra, dec, dist = planet_radec(planets["mars"], planets["earth"], jd=2461169.54167)
+    print(f"Mars: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+    ra, dec, dist = planet_radec(planets["saturn"], planets["earth"], jd=2461169.54167)
+    print(f"Saturn: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+    ra, dec, dist = planet_radec(planets["mercury"], planets["earth"], jd=2461169.54167)
+    print(f"Mercury: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+    ra, dec, dist = planet_radec(planets["uranus"], planets["earth"], jd=2461169.54167)
+    print(f"Uranus: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+    ra, dec, dist = planet_radec(planets["neptune"], planets["earth"], jd=2461169.54167)
+    print(f"Neptune: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
