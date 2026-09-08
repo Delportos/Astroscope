@@ -10,7 +10,7 @@ class Star:
     ra_hours: float
     dec_degrees: float
     distance_ly: float
-    magnitude: float
+    ap_mag: float
     constellation: str
 
 def load_catalog(path):
@@ -22,7 +22,7 @@ def load_catalog(path):
                 ra_hours=float(row["ra_hours"]),
                 dec_degrees=float(row["dec_degrees"]),
                 distance_ly=float(row["distance_ly"]),
-                magnitude=float(row["magnitude"]),
+                ap_mag=float(row["ap_mag"]),
                 constellation=row["constellation"],
                 ))
     return stars
@@ -190,7 +190,7 @@ def identify_star(lat_deg: float, lon_deg: float, alt_m: float,
     return (
         f"Pointing at: {star.name}\n"
         f" Constellation: {star.constellation}\n "
-        f" Apparent mag: {star.magnitude:+.2f}\n "
+        f" Apparent mag: {star.ap_mag:+.2f}\n "
         f" Distance: {star.distance_ly:0.1f} ly " 
         f"({star.distance_ly / 3.262:.1f} pc)\n"
         f" RA/Dec: {star.ra_hours:.3f}h/{star.dec_degrees:+.3f}°\n"
@@ -217,7 +217,7 @@ def stars_i_can_look_at(lat_deg:float,lon_deg:float, alt_m: float, utc:datetime,
 
 # demo
 if __name__ == "__main__":
-    catalog = load_catalog("astroscope/stars.csv")
+    catalog = load_catalog("stars.csv")
 
     test_input = (
         41.495, #lat
