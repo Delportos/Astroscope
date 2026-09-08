@@ -1,0 +1,110 @@
+<html>
+<head>
+<title>~*~ ASTROSCOPE ~*~</title>
+</head>
+<body bgcolor="#C3C0F0" text="#000000" link="#0000FF" vlink="#800080">
+
+<center>
+<font face="Times New Roman" size="+3" color="#000080"><b> // ASTROSCOPE //</b></font><br>
+
+<hr width="80%" size="4" color="#000080">
+
+<table border="3" cellpadding="8" bgcolor="#DDDDDD">
+<tr><td>
+<form onsubmit="return false;">
+<table border="0">
+<tr>
+  <td align="right"><b>Altitude (deg, 0-90):</b></td>
+  <td><input type="text" id="alt" size="10" value="45"></td>
+</tr>
+<tr>
+  <td align="right"><b>Azimuth (deg, 0=N, 90=E):</b></td>
+  <td><input type="text" id="az" size="10" value="90"></td>
+</tr>
+</table>
+<br>
+<center><input type="button" value=" >> POINT THE SCOPE << " onclick="pointScope()"></center>
+</form>
+</td></tr>
+</table>
+
+<br>
+
+<table border="0" cellpadding="4">
+<tr>
+  <td align="right">Latitude:</td>
+  <td><input type="text" id="lat" size="10" value="{{ default_lat }}"></td>
+  <td align="right">Longitude:</td>
+  <td><input type="text" id="lon" size="10" value="{{ default_lon }}"></td>
+</tr>
+</table>
+
+<hr width="80%">
+
+<table border="1" cellpadding="6" bgcolor="#FFFFCC">
+<tr><td>
+<font face="Courier New" size="+1">
+<pre id="output">Waiting for input...</pre>
+</font>
+</td></tr>
+</table>
+
+<hr width="80%">
+</center>
+
+<script>
+// Pure display formatting only. No astronomy here -- that all comes
+// back from the Flask server, which calls straight into starfinder.py.
+
+function hoursToHMS(h) {
+  var hh = Math.floor(h);
+  var mm = Math.floor((h - hh) * 60);
+  var ss = (((h - hh) * 60) - mm) * 60;
+  return hh + "h " + mm + "m " + ss.toFixed(1) + "s";
+}
+
+function degToDMS(d) {
+  var sign = d < 0 ? "-" : "+";
+  d = Math.abs(d);
+  var dd = Math.floor(d);
+  var mm = Math.floor((d - dd) * 60);
+  var ss = (((d - dd) * 60) - mm) * 60;
+  return sign + dd + "\u00B0 " + mm + "' " + ss.toFixed(1) + "\"";
+}
+
+function pointScope() {
+  var alt = document.getElementById("alt").value;
+  var az = document.getElementById("az").value;
+  var lat = document.getElementById("lat").value;
+  var lon = document.getElementById("lon").value;
+
+  document.getElementById("output").innerHTML = "Contacting starfinder.py...";
+
+  fetch("/api/point", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ alt: alt, az: az, lat: lat, lon: lon })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.error) {
+      document.getElementById("output").innerHTML = "ERROR: " + data.error;
+      return;
+    }
+    var out = "";
+    out += "TIME (UTC):       " + data.utc + "\n";
+    out += "--------------------------------------------\n";
+    out += "RIGHT ASCENSION:  " + hoursToHMS(data.ra_hours) + "\n";
+    out += "DECLINATION:      " + degToDMS(data.dec_degrees) + "\n";
+    out += "--------------------------------------------\n";
+    out += data.result_text;
+    document.getElementById("output").innerHTML = out;
+  })
+  .catch(function(err) {
+    document.getElementById("output").innerHTML = "ERROR reaching server: " + err;
+  });
+}
+</script>
+
+</body>
+</html>

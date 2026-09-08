@@ -4,9 +4,9 @@ of real hardware. Mirrors main.py's dispatcher shape but uses display.virtual
 for show/wait so the pygame window stays responsive.
 
 Run from project root:
-    python -m display.virtualmain          # default scene
-    python -m display.virtualmain boot
-    python -m display.virtualmain load
+    python -m virtualdisplay.virtualmain          # default scene
+    python -m virtualdisplay.virtualmain boot
+    python -m virtualdisplay.virtualmain load
 
 Quit: press Enter in the terminal, close the pygame window, or hit Esc in it.
 """
