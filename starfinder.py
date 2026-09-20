@@ -3,6 +3,8 @@ import csv
 import math
 from datetime import datetime, timezone
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
 
 @dataclass
 class Star:
@@ -13,6 +15,17 @@ class Star:
     ap_mag: float
     constellation: str
 
+@dataclass
+class PointingResult:
+    ra_hours: float            # where the tube is pointing, in sky coordinates
+    dec_deg: float
+    star: Optional[Star]       # nearest catalog star (None if the catalog search found nothing)
+    sep_deg: Optional[float]   # angular distance to that star
+    matched: bool              # True only if the star is within max_sep
+    year: int                  # observation year, for the light-travel line
+
+
+MATCH_MAX_SEP_DEG = 2.0
 def load_catalog(path):
     stars = []
     with open(path, newline="",encoding="utf-8-sig") as f:
@@ -138,7 +151,7 @@ def angular_distance(ra1_h: float, dec1_d: float,
 
 def find_nearest_star(catalog: list[Star],
                       ra_hours:float, dec_degrees: float,
-                      tolerance_deg: float = 10.0
+                      tolerance_deg: float = 5.0
                     ) -> tuple[Star, float] | None:
     
     """
@@ -162,41 +175,49 @@ def find_nearest_star(catalog: list[Star],
 # step 5: End to end Identify
 
 def identify_star(lat_deg: float, lon_deg: float, alt_m: float,
-                  utc:datetime,
+                  utc: datetime,
                   pointing_alt_deg: float, pointing_az_deg: float,
-                  catalog: list[Star]
-) -> str:
+                  catalog: list[Star],
+                  max_sep: float = MATCH_MAX_SEP_DEG) -> PointingResult:
     """
-    Top level: take our observerstat and pointing direction, return a human string!
-    NoteL alt_m(elevation) is not used in this prototype - it woudl only matter if we corrected 
-    for atmospheric refraction or parallax for nearby objects
+    Take observer state and pointing direction, return what we're pointing at.
+    Pure function: no printing, no state. Formatting lives in format_result().
+    Note: alt_m (elevation) is unused in this prototype; it would only matter
+    for atmospheric refraction or parallax corrections.
     """
-
     lst = local_sidereal_time(utc, lon_deg)
-    ra, dec = altaz_to_radec(pointing_alt_deg, pointing_az_deg,
-                             lat_deg, lst)
-    result = find_nearest_star(catalog,ra, dec)
-    if result is None:
-        return f"No bright star is within your point.\n" \
-        f" (Pointing at RA {ra:0.2f}h, Dec{dec:+0.2f}°)"
-    
-    star, dist = result
-    light_year_to_year_string = (
-        f"Light from this star left in {utc.year - int(star.distance_ly)}"
-        if star.distance_ly < 3000 else
-        f"Light from this star left ~{int(star.distance_ly)} years ago"
-    )
+    ra, dec = altaz_to_radec(pointing_alt_deg, pointing_az_deg, lat_deg, lst)
 
-    return (
-        f"Pointing at: {star.name}\n"
-        f" Constellation: {star.constellation}\n "
-        f" Apparent mag: {star.ap_mag:+.2f}\n "
-        f" Distance: {star.distance_ly:0.1f} ly " 
-        f"({star.distance_ly / 3.262:.1f} pc)\n"
-        f" RA/Dec: {star.ra_hours:.3f}h/{star.dec_degrees:+.3f}°\n"
-        f" Off-axis by: {dist:.2f}°\n"
-        f" {light_year_to_year_string}"
-    )
+    found = find_nearest_star(catalog, ra, dec)
+    if found is None:
+        return PointingResult(ra, dec, None, None, False, utc.year)
+
+    star, sep = found
+    return PointingResult(ra, dec, star, sep, sep <= max_sep, utc.year)
+
+
+def format_result(result: PointingResult) -> str:
+    if result.star is None:
+        return (f"No bright star near your pointing.\n"
+                f" (Pointing at RA {result.ra_hours:0.2f}h, Dec {result.dec_deg:+0.2f}°)")
+
+    star = result.star
+    if not result.matched:
+        return (f"No catalog star within range.\n"
+                f" Nearest: {star.name} ({result.sep_deg:.1f}° away)\n"
+                f" (Pointing at RA {result.ra_hours:0.2f}h, Dec {result.dec_deg:+0.2f}°)")
+
+    light = (f"Light from this star left in {result.year - int(star.distance_ly)}"
+             if star.distance_ly < 3000 else
+             f"Light from this star left ~{int(star.distance_ly)} years ago")
+
+    return (f"Pointing at: {star.name}\n"
+            f" Constellation: {star.constellation}\n"
+            f" Apparent mag: {star.ap_mag:+.2f}\n"
+            f" Distance: {star.distance_ly:0.1f} ly ({star.distance_ly / 3.262:.1f} pc)\n"
+            f" RA/Dec: {star.ra_hours:.3f}h/{star.dec_degrees:+.3f}°\n"
+            f" Off-axis by: {result.sep_deg:.2f}°\n"
+            f" {light}")
 
 def stars_i_can_look_at(lat_deg:float,lon_deg:float, alt_m: float, utc:datetime, pointing_alt_deg:float, pointing_az_deg:float, catalog:list[Star])->str:
     lst = local_sidereal_time(utc,lon_deg)
@@ -217,32 +238,35 @@ def stars_i_can_look_at(lat_deg:float,lon_deg:float, alt_m: float, utc:datetime,
 
 # demo
 if __name__ == "__main__":
-    catalog = load_catalog("stars.csv")
+
+    BASE_DIR = Path(__file__).resolve().parent
+    DEFAULT_CATALOG = BASE_DIR / "stars.csv"
+    catalog = load_catalog(DEFAULT_CATALOG)
 
     test_input = (
         41.495, #lat
         -81.535, #lon
         220, #elev
-        datetime(2026,4,29,1,38,0,tzinfo=timezone.utc), #utc
-        7.5, #pointing altitude
-        43.35, # pointing azimuth
+        datetime(2026,9,20,2,50,0,tzinfo=timezone.utc), #utc
+        52, #pointing altitude
+        217, # pointing azimuth
     ) #should return vega
 
     test_input2 = (
         41.495, #lat
         -81.535, #lon
         220, #elev
-        datetime(2026,5,2,1,40,0,tzinfo=timezone.utc), #utc
+        datetime(2026,9,20,2,50,0,tzinfo=timezone.utc), #utc
         41, #pointing altitude
         359, # pointing azimuth
     )
 
-    print(identify_star(*test_input,catalog=catalog))
-    print(identify_star(*test_input2,catalog=catalog))
+    print(format_result(identify_star(*test_input,catalog=catalog)))
+    print(format_result(identify_star(*test_input2,catalog=catalog)))
     visible = stars_i_can_look_at(*test_input,catalog=catalog)
     print(f"{len(visible)} stars are currently above the horizon:")
-    for star in visible:
-        print(f"{star.name} ({star.constellation}) ")
+    ##for star in visible:
+       ## print(f"{star.name} ({star.constellation}) ")
  
 
 

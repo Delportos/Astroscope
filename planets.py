@@ -2,7 +2,7 @@ import csv
 import math
 from pathlib import Path
 from dataclasses import dataclass
-
+from datetime import datetime, timezone
 
 @dataclass
 class Planet:
@@ -16,6 +16,26 @@ class Planet:
     L_deg: float
     epoch_jd_tdb: float
 
+def julian_date(utc: datetime):
+    jd = 0
+    if utc.tzinfo is None:
+        utc = utc.replace(tzinfo=timezone.utc)
+        
+    y,m = utc.year, utc.month
+    d = (utc.day
+         + utc.hour/24
+         +utc.minute / 1440
+         + utc.second / 86400)
+    if m <= 2:
+        y -= 1
+        m += 12
+    a = y//100
+    b = 2 - a + a//4
+    jd = (math.floor(365.25 * (y+4716))
+                +math.floor(30.6001 *(m+1))
+                + d + b - 1524.5)
+    jd = float(jd)
+    return jd   
 
 def load_catalog(path) -> dict[str, Planet]:
     planets = {}
@@ -98,6 +118,11 @@ def planet_radec(planet: Planet, earth: Planet, jd: float) -> tuple[float, float
 if __name__ == "__main__":
     SCRIPT_DIR = Path(__file__).parent
     planets = load_catalog(SCRIPT_DIR / "planets.csv")
+
+
+
+
+
     print("Keys:", list(planets.keys()))
     print("Repr:", [repr(k) for k in planets.keys()])
     ra, dec, dist = planet_radec(planets["venus"], planets["earth"], jd=2461208.54167)
@@ -107,7 +132,7 @@ if __name__ == "__main__":
     print(f"Jupiter: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
     ra, dec, dist = planet_radec(planets["mars"], planets["earth"], jd=2461208.54167)
     print(f"Mars: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
-    ra, dec, dist = planet_radec(planets["saturn"], planets["earth"], jd=2461208.54167)
+    ra, dec, dist = planet_radec(planets["saturn"], planets["earth"], jd=2461303.6748842592)
     print(f"Saturn: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
     ra, dec, dist = planet_radec(planets["mercury"], planets["earth"], jd=2461208.54167)
     print(f"Mercury: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
@@ -115,3 +140,7 @@ if __name__ == "__main__":
     print(f"Uranus: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
     ra, dec, dist = planet_radec(planets["neptune"], planets["earth"], jd=2461208.54167)
     print(f"Neptune: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")
+
+
+    ra,dec,dist = planet_radec(planets["saturn"], planets["earth"], jd=julian_date(datetime.now(timezone.utc)))
+    print(f"Saturn: RA = {ra:.4f} hr  Dec = {dec:.4f}°  dist = {dist:.4f} AU")

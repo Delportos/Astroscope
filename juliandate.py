@@ -24,7 +24,7 @@ def julian_date(utc: datetime):
 
 
 
-
-now = datetime.now(timezone.utc)
-today = julian_date(now)
-print(f"The current julian date is: {today} ")
+if __name__ == "__main__":
+    now = datetime.now(timezone.utc)
+    today = julian_date(now)
+    print(f"The current julian date is: {today} ")
