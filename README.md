@@ -8,6 +8,7 @@ Going forward, there will be a couple folders in this repository.
 
 ## Project Structure
 
+```
 **astroscope**/
 ├── src/
 │   ├── planets.py       
@@ -28,3 +29,4 @@ Going forward, there will be a couple folders in this repository.
 │       ├──
 └── starfinder.py
 └── README.md
+```
