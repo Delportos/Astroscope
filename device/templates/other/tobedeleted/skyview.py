@@ -30,7 +30,7 @@ FOV_MIN, FOV_MAX = 5.0, 120.0
 LABEL_MAG_LIMIT = 3.5           # label stars brighter than this (the match is always labeled)
 MATCH_SEP_DEG = getattr(starfinder, "MATCH_MAX_SEP_DEG", 2.0)
 
-BG = (5, 8, 20)
+BG = (44, 54, 105)
 MATCH = (255, 200, 60)
 RETICLE = (200, 60, 60)
 HUD = (170, 190, 220)

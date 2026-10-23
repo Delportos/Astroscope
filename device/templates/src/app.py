@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime, timezone
 
-from starfinder import(
+from astroscope.src.starfinder import(
     load_catalog,
     local_sidereal_time,
     altaz_to_radec,

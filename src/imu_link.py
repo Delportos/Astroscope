@@ -79,6 +79,7 @@ if __name__ == "__main__":
     last_print = 0.0
     PRINT_INTERVAL = 1.5   # seconds
     imu = IMULink()
+    
 
     def wait_for_enter():
         while True:
